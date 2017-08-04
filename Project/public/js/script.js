@@ -17,9 +17,12 @@ $(document).ready(function () {
         var latval = position.coords.latitude;
         var lngval = position.coords.longitude;
 
+        console.log([latval, lngval]);
+
         myLatLng = new google.maps.LatLng(latval,lngval);
         createMap(myLatLng);
-        nearbySearch(myLatLng,"gym");
+        //nearbySearch(myLatLng,"gym");
+        searchGyms(latval,lngval);
 
     }
 
@@ -33,7 +36,7 @@ $(document).ready(function () {
         map = new google.maps.Map(document.getElementById('map'), {
             center: myLatLng,
             scrollwheel: false,
-            zoom: 12
+            zoom: 9
         });
 
         var marker= new google.maps.Marker({
@@ -52,7 +55,7 @@ $(document).ready(function () {
         });
     }
 
-    function nearbySearch(myLatLng, type){
+    /*function nearbySearch(myLatLng, type){
         var request = {
             location: myLatLng,
             radius: '10000',
@@ -74,6 +77,20 @@ $(document).ready(function () {
                 }
             }
         }
+    }*/
+    function searchGyms(lat,lng){
+        $.post('http://localhost:8000/api/searchGyms',{lat:lat,lng:lng},function(match){
+            console.log(match);
+
+            $.each(match,function(i,val){
+                var glatval = val.lat;
+                var glngval = val.lng;
+                var gname = val.name;
+                var GLatLng = new google.maps.LatLng(glatval,glngval);
+                var gicn = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+                createMarker(GLatLng,gicn,gname);
+            });
+        });
     }
 
 
